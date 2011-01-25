@@ -9,8 +9,8 @@ class ProcServer
     loop do
       tuple = @ts.take(['proc', nil])
       request = tuple[1]
-      p tuple
-      response = request[]
+      secret_num = 3
+      response = request[secret_num]
       p response
       @ts.write(['proc-answer', nil, response])
     end

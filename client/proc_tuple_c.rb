@@ -1,7 +1,7 @@
 require 'drb/drb'
 
 def proc_client(ts, a, b)
-  ts.write(['proc', proc{a + b}])
+  ts.write(['proc', proc{|num | num * 10}])
   key, request, response = ts.take(['proc-answer', nil, nil])
   return response
 end
