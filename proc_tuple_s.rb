@@ -7,13 +7,12 @@ class FactServer
 
   def main_loop
     loop do
-      tuple = @ts.take(['fact', nil, nil])
-      m = tuple[1]
-      n = tuple[2]
+      tuple = @ts.take(['fact', nil])
+      request = tuple[1]
       p tuple
-      value = m[]
-      p value
-      @ts.write(['fact-answer', m, n, value])
+      response = request[]
+      p response
+      @ts.write(['fact-answer', nil, response])
     end
   end
 end

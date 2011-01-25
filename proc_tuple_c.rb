@@ -1,9 +1,9 @@
 require 'drb/drb'
 
 def fact_client(ts, a, b)
-  ts.write(['fact', proc{a + b}, b])
-  tuple = ts.take(['fact-answer', nil, nil, nil])
-  return tuple[3]
+  ts.write(['fact', proc{a + b}])
+  key, request, response = ts.take(['fact-answer', nil, nil])
+  return response
 end
 
 ts_uri = ARGV.shift || 'druby://localhost:12345'
