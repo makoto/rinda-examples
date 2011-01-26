@@ -12,8 +12,9 @@ class ProcServer
     loop do
       tuple = @ts.take(['proc', nil])
       request = tuple[1]
+      p request
       response = request[]
-      # This returns the location of client, because the object is passed by reference rather than value.
+      # This returns the location of client(not server), because the object is passed by reference rather than value.
       p response
       @ts.write(['proc-answer', nil, response])
     end
