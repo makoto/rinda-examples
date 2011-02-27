@@ -1,33 +1,19 @@
 require 'em-websocket'
 require 'twitter/json_stream'
 require 'json'
+require 'drb'
 
 #
 # broadcast all ruby related tweets to all connected users!
 #
 
-username = ARGV.shift
-password = ARGV.shift
-port = ARGV.shift
-raise "need username and password" if !username or !password
+ws_port = ARGV.shift.to_i
+channel_port = ARGV.shift.to_i
+DRb.start_service
+@channel = DRbObject.new_with_uri("druby://localhost:#{channel_port}")
 
 EventMachine.run {
-  @channel = EM::Channel.new
-
-  @twitter = Twitter::JSONStream.connect(
-    :path => '/1/statuses/filter.json?track=a',
-    :auth => "#{username}:#{password}"
-  )
-
-  @twitter.each_item do |status|
-    # status = JSON.parse(status)
-    # @channel.push "#{status['user']['screen_name']}: #{status['text']}"
-    # p status
-    @channel.push status
-  end
-
-
-  EventMachine::WebSocket.start(:host => "0.0.0.0", :port => port.to_i, :debug => true) do |ws|
+  EventMachine::WebSocket.start(:host => "0.0.0.0", :port => ws_port, :debug => true) do |ws|
 
     ws.onopen {
       sid = @channel.subscribe { |msg| ws.send msg }
