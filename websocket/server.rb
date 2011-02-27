@@ -13,7 +13,7 @@ DRb.start_service
 @channel = DRbObject.new_with_uri("druby://localhost:#{channel_port}")
 
 EventMachine.run {
-  EventMachine::WebSocket.start(:host => "0.0.0.0", :port => ws_port, :debug => true) do |ws|
+  EventMachine::WebSocket.start(:host => "0.0.0.0", :port => ws_port, :debug => false) do |ws|
 
     ws.onopen {
       sid = @channel.subscribe { |msg| ws.send msg }

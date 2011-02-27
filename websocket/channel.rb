@@ -2,10 +2,29 @@ require 'rubygems'
 require 'em-websocket'
 require 'drb'
 require 'twitter/json_stream'
+require 'yaml'
 
-username = ARGV.shift
-password = ARGV.shift
+credential_file = '.twitter'
+
+usage = <<-EOF
+  #{credential_file} is missing. Add the file with the following format
+:username: USERNAME
+:password: PASSWORD
+EOF
+
+raise usage unless File.exist? credential_file
+
+ 
+credentials = YAML.load_file(credential_file)
+username = credentials[:username]
+password = credentials[:password]
+
+raise "username and password are not set properly" unless username && password
+
 port = ARGV.shift # eg: 22345
+
+raise "specify port" unless port
+
 begin
 start = Time.now  
 
