@@ -14,7 +14,6 @@ EOF
 
 raise usage unless File.exist? credential_file
 
- 
 credentials = YAML.load_file(credential_file)
 username = credentials[:username]
 password = credentials[:password]
