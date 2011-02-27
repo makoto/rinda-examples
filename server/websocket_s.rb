@@ -7,8 +7,8 @@ require 'drb'
 # broadcast all ruby related tweets to all connected users!
 #
 
-ws_port = ARGV.shift.to_i
-channel_port = ARGV.shift.to_i
+ws_port = ARGV.shift.to_i # eg: 12345 and 12346
+channel_port = ARGV.shift.to_i # 22345
 DRb.start_service
 @channel = DRbObject.new_with_uri("druby://localhost:#{channel_port}")
 

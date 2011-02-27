@@ -5,7 +5,7 @@ require 'twitter/json_stream'
 
 username = ARGV.shift
 password = ARGV.shift
-port = ARGV.shift
+port = ARGV.shift # eg: 22345
 
 @channel = EM::Channel.new
 DRb.start_service("druby://localhost:#{port}", @channel)
