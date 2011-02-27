@@ -1,20 +1,46 @@
 require 'em-websocket'
+require 'twitter/json_stream'
+require 'json'
 
-port = ARGV[0].to_i
-p port
+#
+# broadcast all ruby related tweets to all connected users!
+#
+
+username = ARGV.shift
+password = ARGV.shift
+port = ARGV.shift
+raise "need username and password" if !username or !password
+
 EventMachine.run {
-    EventMachine::WebSocket.start(:host => "0.0.0.0", :port => port) do |ws|
-        ws.onopen {
-          puts "WebSocket connection open"
+  @channel = EM::Channel.new
 
-          # publish message to the client
-          ws.send "Hello Client"
-        }
+  @twitter = Twitter::JSONStream.connect(
+    :path => '/1/statuses/filter.json?track=a',
+    :auth => "#{username}:#{password}"
+  )
 
-        ws.onclose { puts "Connection closed" }
-        ws.onmessage { |msg|
-          puts "Recieved message: #{msg}"
-          ws.send "Pong: #{msg}"
-        }
-    end
+  @twitter.each_item do |status|
+    # status = JSON.parse(status)
+    # @channel.push "#{status['user']['screen_name']}: #{status['text']}"
+    # p status
+    @channel.push status
+  end
+
+
+  EventMachine::WebSocket.start(:host => "0.0.0.0", :port => port.to_i, :debug => true) do |ws|
+
+    ws.onopen {
+      sid = @channel.subscribe { |msg| ws.send msg }
+      @channel.push "#{sid} connected!"
+      ws.onmessage { |msg|
+        @channel.push "<#{sid}>: #{msg}"
+      }
+      ws.onclose {
+        @channel.unsubscribe(sid)
+      }
+
+    }
+  end
+
+  puts "Server started"
 }
