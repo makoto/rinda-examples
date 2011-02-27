@@ -11,6 +11,7 @@
     $(document).ready(function(){
       function debug(str){ $("#debug").append("<p>" +  str); };
       console.log('hello');
+      // port number may need to be changed.
       ws = new WebSocket("ws://localhost:12345/");
       ws.onmessage = function(evt) { $("#msg").append("<p>"+evt.data+"</p>"); };
       ws.onclose = function() { debug("socket closed"); };
